@@ -149,13 +149,7 @@ jitFactor=0.2;
 circleSize=circleSize./max(X);% So circleSize scales with n-data columns
 
 if strcmp(barstate, 'off') && strcmp(isPaired, 'N')
-    colors = lines(100);
-    for idx=1:nex
-        curDat=celld{idx};
-        hold on
-        [s1] = scatJit(curDat, jitFactor, X(idx) ,circleSize,colors(idx,:));
-              
-    end
+    violinplot(data,identifiers,'GroupOrder',uidents);
 end
 
 set(gca,'XTick',X);
