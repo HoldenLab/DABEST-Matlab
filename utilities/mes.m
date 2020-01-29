@@ -200,7 +200,8 @@ list_analysis={...
   'U1',          2, 'Cohen''s U1';...
   'U3',          2, 'Cohen''s U3';...
   'tailratio',   2, 'tail ratios';...
-  'rbcorr',      2, 'rank-biserial correlation coefficient'...
+  'rbcorr',      2, 'rank-biserial correlation coefficient';...
+  'median',      2, 'median difference'
   };
 % in case esm is a char array convert it to a cell array because the code
 % below relies on it
@@ -603,6 +604,11 @@ for g=1:nColX
             ciType='exact analytical';
           end
         end
+
+      case 'median'
+          med1=median(x,1);
+          med2=median(y,2);
+          es = med1-med2;
         
       case 'mdbysd'
         % mean difference divided by std of difference score (defined only
@@ -881,7 +887,6 @@ end
 if doPlot
   simpleEsPlot(stats,esm);
 end
-
 % ========================= LOCAL FUNCTIONS ===============================
 % ========================= LOCAL FUNCTIONS ===============================
 
