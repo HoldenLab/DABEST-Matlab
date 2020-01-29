@@ -4,7 +4,7 @@ function  ss=FscatJit2_med(identifiers, data, varargin)
 % order the identifiers are passed to it. It preserves whatever order
 % was in the fbmm structure. Also includes the option to define the circle
 % size or use a default. Also allows someone to add bars to the plot.
-% HACKED TO DO MEDIAN DIFFERENCE - HOLDEN 200129
+% HACKED TO DO MEDIAN DIFFERENCE - HOLDEN 
 %
 % FscatJit(identifiers, data)
 % Uses the default circle size, no bars
@@ -179,7 +179,7 @@ end
 hold on;
 stats = table(uidents, Value, CI, N, 'VariableNames',{'Group','Value','CIs','N'});
 
-[e1] = tripleErrorBars(av, er, X, barwidth, linewidth, middle_bar);
+%[e1] = tripleErrorBars(av, er, X, barwidth, linewidth, middle_bar);
 
 
 %% Set ticks, contigent on whether it is 2 or some other number of datasets
@@ -223,7 +223,7 @@ if length(celld)==2;
         set(gca, 'xtickLabel', mdidents);
         set(gca, 'XLim', [0 length(mdidents)+1], 'box', 'off');
         ylabel('value','FontSize',18,'FontName','Arial');
-        tripleErrorBars(av, er, [.5 2.5], barwidth, linewidth, middle_bar);
+        %tripleErrorBars(av, er, [.5 2.5], barwidth, linewidth, middle_bar);
     end
 
     % Get the median difference and CIs
@@ -272,7 +272,7 @@ if length(celld)==2;
         
         % Errorbar axis
         errorBarAxis = axes('Position',[ax1Pos(1) num3*y2-(num3-1)*y ax1Pos(3) yNew-(num3*y2-(num3-1)*y)]);
-        p3= errorbar(3 ,ss.median, moes(1),moes(2));
+        %p3= errorbar(3 ,ss.median, moes(1),moes(2));
         
         axis([0 4 num3*ss.median (num-1)*abs(ss.median)]);
         
@@ -297,7 +297,7 @@ if length(celld)==2;
         
         % Errorbar axis
         errorBarAxis = axes('Position',[ax1Pos(1) num*y-(num-1)*y2 ax1Pos(3) ((num3*y2-(num3-1)*y) - (num*y-(num-1)*y2))]);
-        p3= errorbar(3 ,ss.median, moes(1),moes(2));
+        %p3= errorbar(3 ,ss.median, moes(1),moes(2));
         
         axis([0 4 (num-1)*(-1)*ss.median num3*(ss.median)]);
         
@@ -311,7 +311,7 @@ if length(celld)==2;
         
         errorBarAxis = axes('Position',[ax1Pos(1) y-0.3 ax1Pos(3) 0.6]);
         
-        p3= errorbar(3 ,ss.median, moes(1),moes(2));
+        %p3= errorbar(3 ,ss.median, moes(1),moes(2));
         axis([0 4 -.1 .1]);
         
         dummyAxis = axes('Position',[ax1Pos(1) + ax1Pos(3)-((x-ax1Pos(1))/2) y-0.3 .001 0.6]);
