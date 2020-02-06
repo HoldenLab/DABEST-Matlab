@@ -56,6 +56,7 @@ function  ss=FscatJit2_med(identifiers, data, varargin)
 %SIMPLE MANUAL HACK TO CHANGE ESM SH 200128
 %esm='md';
 esm='median';
+NBOOT = 10000
 
 %% Deal with the varargin options
 % fprintf('Total number of inputs = %d\n',nargin);
@@ -362,17 +363,25 @@ else
     ci = zeros(2, length(celld));
     N = NaN(length(celld)-1,1);
     
+    bootDiff_data=[0];
+    bootDiff_name={' '};
     for idx = 2:length(celld)
-        ss=mes(celld{idx},celld{1},esm,'nBoot',10000);
+        %[ss ]=mes(celld{idx},celld{1},esm,'nBoot',NBOOT);
+        [ss bootDiff]=mes(celld{idx},celld{1},esm,'nBoot',NBOOT);
         avr(:,idx)=repmat(ss.median,2, 1);
         moes(:,idx)=abs(avr(:,idx)-ss.medianCi);
         ci(:,idx) = ss.medianCi;
         delta_name(idx-1,:) = {[uidents{idx}, ' minus ', uidents{1}]};
+        bootDiff_data=[bootDiff_data,bootDiff];
+        bootDiff_name = [bootDiff_name,repmat(delta_name(idx-1),1,NBOOT)];
     end
-    
     stats_delta = table(delta_name, avr(1,2:end)', ci(:,2:end)', N, 'VariableNames', {'Group','Value','CIs','N'});
     stats = [stats; stats_delta];
-    
+    %TODO: will need to modify the violin plot so can plot the median as calculated directly from the non bootstrapped data rather than average of all the bootstrapped medians
+    %TODO ALSO WHERE IS THE EMPTY REF ROW??
+    figure;
+    dabestviolinplot(bootDiff_data, bootDiff_name,'ShowData',false)
+    keyboard
     [ciMin, ~] = min(ci(1,:));
     [ciMax, ~] = max(ci(2,:));
     
@@ -398,110 +407,110 @@ else
     
     %% Multiple pairwise comparisons
     clearvars avr moes ci delta_name N;
-    if mod(length(celld),2)==0
-        figure;
-        pwmd = panel();
-        pwmd.pack([50,50], 1);
+    %if mod(length(celld),2)==0
+    %    figure;
+    %    pwmd = panel();
+    %    pwmd.pack([50,50], 1);
  
-        marker = 'o';
-        
-        % Pairwise median differences
-        idx = 1;
-        jdx = 1;
-        
-        while jdx < length(celld)
-            ss=mes(celld{jdx+1},celld{jdx},esm,'nBoot',10000);
-            avr(:,idx)=repmat(ss.median,2, 1);
-            moes(:,idx)=abs(avr(:,idx)-ss.medianCi);
-            ci(:,idx) = ss.medianCi;
-            delta_name(idx,:) = {[uidents{jdx+1}, ' minus ', uidents{jdx}]};
-            
-            jdx = jdx+2;
-            idx = idx + 1;
-        end
-        stats_delta = table(delta_name, avr(1,:)', ci', NaN(length(delta_name),1), 'VariableNames', {'Group','Value','CIs','N'});
-        stats = [stats; stats_delta];
-        
-        count = 0;
-        idx = 1;
-        while idx <= length(X)
-            for jdx = 1:2
-                newX(idx) = X(idx)+(count);
-                idx = idx + 1;
-            end
-            count = count + 1;
-        end
-        
-        pwmd(1,1).select();
-        refAxes = gca;
-        marker = 'o';
-        ylabel('value','FontSize',18,'FontName','Arial');
-        if isempty(lims) == 0
-            set(refAxes, 'YLim', lims);
-        end
-        set(refAxes, 'XLim', [0 max(newX)+1]);
-        
-        if strcmp(barstate, 'on')
-            for idx=1:nex
-                curDat=celld{idx};
-                av(idx)=nanmedian(curDat);
-            end
-            [b] = bar(newX, av);
-            mydata=(1:length(av));
-            bar_child=get(b,'Children');
-            for idx = 1:nex
-                if mod(idx, 2)==1
-                    mydata(idx) = 0;
-                else
-                    mydata(idx) = 1;
-                end
-            end
-            set(bar_child,'CData',mydata);
-            cmap = [0     0     0; 0    0    0];
-            set(k, 'EdgeColor', [0    0    0], 'LineWidth', 1.25);
-            set(gca, 'box', 'off');
-            colormap(cmap);
+    %    marker = 'o';
+    %    
+    %    % Pairwise median differences
+    %    idx = 1;
+    %    jdx = 1;
+    %    
+    %    while jdx < length(celld)
+    %        ss=mes(celld{jdx+1},celld{jdx},esm,'nBoot',10000);
+    %        avr(:,idx)=repmat(ss.median,2, 1);
+    %        moes(:,idx)=abs(avr(:,idx)-ss.medianCi);
+    %        ci(:,idx) = ss.medianCi;
+    %        delta_name(idx,:) = {[uidents{jdx+1}, ' minus ', uidents{jdx}]};
+    %        
+    %        jdx = jdx+2;
+    %        idx = idx + 1;
+    %    end
+    %    stats_delta = table(delta_name, avr(1,:)', ci', NaN(length(delta_name),1), 'VariableNames', {'Group','Value','CIs','N'});
+    %    stats = [stats; stats_delta];
+    %    
+    %    count = 0;
+    %    idx = 1;
+    %    while idx <= length(X)
+    %        for jdx = 1:2
+    %            newX(idx) = X(idx)+(count);
+    %            idx = idx + 1;
+    %        end
+    %        count = count + 1;
+    %    end
+    %    
+    %    pwmd(1,1).select();
+    %    refAxes = gca;
+    %    marker = 'o';
+    %    ylabel('value','FontSize',18,'FontName','Arial');
+    %    if isempty(lims) == 0
+    %        set(refAxes, 'YLim', lims);
+    %    end
+    %    set(refAxes, 'XLim', [0 max(newX)+1]);
+    %    
+    %    if strcmp(barstate, 'on')
+    %        for idx=1:nex
+    %            curDat=celld{idx};
+    %            av(idx)=nanmedian(curDat);
+    %        end
+    %        [b] = bar(newX, av);
+    %        mydata=(1:length(av));
+    %        bar_child=get(b,'Children');
+    %        for idx = 1:nex
+    %            if mod(idx, 2)==1
+    %                mydata(idx) = 0;
+    %            else
+    %                mydata(idx) = 1;
+    %            end
+    %        end
+    %        set(bar_child,'CData',mydata);
+    %        cmap = [0     0     0; 0    0    0];
+    %        set(k, 'EdgeColor', [0    0    0], 'LineWidth', 1.25);
+    %        set(gca, 'box', 'off');
+    %        colormap(cmap);
 
-        end
-        
-        if strcmp(barstate, 'off')
-            for idx = 1:nex
-                curDat=celld{idx};
-                hold on
-                scatJit(curDat, jitFactor, newX(idx), circleSize,colors(idx,:));
-            end
-        end
-        tripleErrorBars(av, er, newX,barwidth, linewidth, middle_bar);
-        
-        
-        pwmd(2,1).select();
-        ylabel('delta value','FontSize',18,'FontName','Arial');
+    %    end
+    %    
+    %    if strcmp(barstate, 'off')
+    %        for idx = 1:nex
+    %            curDat=celld{idx};
+    %            hold on
+    %            scatJit(curDat, jitFactor, newX(idx), circleSize,colors(idx,:));
+    %        end
+    %    end
+    %    tripleErrorBars(av, er, newX,barwidth, linewidth, middle_bar);
+    %    
+    %    
+    %    pwmd(2,1).select();
+    %    ylabel('delta value','FontSize',18,'FontName','Arial');
 
-        idx = 1;
-        count = 1;
-        esX = zeros(1, length(newX)/2);
-        while count <= length(newX)/2
-            esX(count) = (newX(idx) + newX(idx+1))/2;
-            idx = idx + 2;
-            count = count + 1;
-        end
-        
-        p5= errorbar(esX, avr(1,:), moes(1,:), moes(2,:));
-        
-        marker ='o';
-        set(p5,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor',[0 0 0],'Color','k',...
-            'MarkerSize',5,...
-            'Marker',marker,...
-            'LineStyle','none'...
-           );
-        set(refAxes, 'Xtick', []);
-        %         set(refAxes,'XTick',newX, 'xtickLabel', uidents);
-        set(gca, 'Xtick', newX, 'xtickLabel', uidents);
-        set(gca, 'XLim', get(refAxes, 'Xlim'));
-        
-        line1 = refline(0,0);
-        set(line1, 'lineStyle', ':')
-    end
+    %    idx = 1;
+    %    count = 1;
+    %    esX = zeros(1, length(newX)/2);
+    %    while count <= length(newX)/2
+    %        esX(count) = (newX(idx) + newX(idx+1))/2;
+    %        idx = idx + 2;
+    %        count = count + 1;
+    %    end
+    %    
+    %    p5= errorbar(esX, avr(1,:), moes(1,:), moes(2,:));
+    %    
+    %    marker ='o';
+    %    set(p5,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor',[0 0 0],'Color','k',...
+    %        'MarkerSize',5,...
+    %        'Marker',marker,...
+    %        'LineStyle','none'...
+    %       );
+    %    set(refAxes, 'Xtick', []);
+    %    %         set(refAxes,'XTick',newX, 'xtickLabel', uidents);
+    %    set(gca, 'Xtick', newX, 'xtickLabel', uidents);
+    %    set(gca, 'XLim', get(refAxes, 'Xlim'));
+    %    
+    %    line1 = refline(0,0);
+    %    set(line1, 'lineStyle', ':')
+    %end
     
 end
 ss = stats;

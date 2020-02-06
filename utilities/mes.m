@@ -1,4 +1,4 @@
-function stats=mes(X,Y,esm,varargin)
+function [stats bootDiff]=mes(X,Y,esm,varargin)
 % ** function stats=mes(X,Y,esm,varargin)
 % computes measures of effect size or related quantities between two
 % samples (2-sample analyses) or one sample and a null value (1-sample
@@ -607,7 +607,7 @@ for g=1:nColX
 
       case 'median'
           med1=median(x,1);
-          med2=median(y,2);
+          med2=median(y,1);
           es = med1-med2;
         
       case 'mdbysd'
@@ -860,6 +860,7 @@ for g=1:nColX
       % generated from bootstrapped data
       ci=prctile(es(2:end),[alpha/2  1-alpha/2]'*100);
       % retain first element; this is the es computed from real data
+      bootDiff=es(2:end);
       es=es(1);
     end
     
@@ -870,6 +871,7 @@ for g=1:nColX
     if g==1
       stats.([curEs 'CiType'])=ciType;
     end
+    
   end
   
   % update waitbar
