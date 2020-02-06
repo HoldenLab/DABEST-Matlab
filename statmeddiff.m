@@ -47,7 +47,7 @@ N = NaN(length(celld)-1,1);
 
 bootDiff_data=[0];
 bootDiff_name={uidents{1}};
-delta_name_plot={{' '}};
+delta_name_plot{1}=' '
 for idx = 2:length(celld)
     %[ss ]=mes(celld{idx},celld{1},esm,'nBoot',nBoot);
     [ss bootDiff]=mes(celld{idx},celld{1},esm,'nBoot',nBoot);
@@ -55,7 +55,7 @@ for idx = 2:length(celld)
     moes(:,idx)=abs(avr(:,idx)-ss.medianCi);
     ci(:,idx) = ss.medianCi;
     delta_name_table(idx-1,:) = {[uidents{idx}, ' minus ', uidents{1}]}; 
-    delta_name_plot(idx-1,:) = {{uidents{idx}}, {'minus'}, {uidents{1}}}; 
+    delta_name_plot(idx,:) = {[uidents{idx}, ' minus ', uidents{1}]}; 
     delta_name(idx-1,:) = {[uidents{idx}]};%disable plotting of proper minus names for now
     bootDiff_data=[bootDiff_data,bootDiff];
     bootDiff_name = [bootDiff_name,repmat(delta_name(idx-1),1,nBoot)];

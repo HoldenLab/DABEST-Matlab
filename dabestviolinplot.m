@@ -1,4 +1,4 @@
-function violins = dabestviolinplot(data, cats, trueMedianDiff, varargin)
+function violins = dabestviolinplot(data, cats, trueMedianDiff, delta_name_plot, varargin)
 %DabestViolinplots plots violin plots of some data and categories
 %   VIOLINPLOT(DATA) plots a violin of a double vector DATA
 %
@@ -85,7 +85,7 @@ function violins = dabestviolinplot(data, cats, trueMedianDiff, varargin)
             thisData = data.(catnames{n});
             violins(n) = DabestViolin(thisData, n,trueMedianDiff(n), varargin{:});
         end
-        set(gca, 'xtick', 1:length(catnames), 'xticklabels', catnames);
+        set(gca, 'xtick', 1:length(catnames), 'xticklabels', delta_name_plot);
 
     % 1D data, one category for each data point
     elseif hascategories && numel(data) == numel(cats)
@@ -101,7 +101,7 @@ function violins = dabestviolinplot(data, cats, trueMedianDiff, varargin)
             thisData = data(cats == thisCat);
             violins(n) = DabestViolin(thisData, n, trueMedianDiff(n),varargin{:});
         end
-        set(gca, 'xtick', 1:length(catnames), 'xticklabels', catnames);
+        set(gca, 'xtick', 1:length(catnames), 'xticklabels', delta_name_plot);
 
     % 1D data, no categories
     elseif not(hascategories) && isvector(data)
@@ -116,7 +116,7 @@ function violins = dabestviolinplot(data, cats, trueMedianDiff, varargin)
         end
         set(gca, 'xtick', 1:size(data, 2));
         if hascategories && length(cats) == size(data, 2)
-            set(gca, 'xticklabels', cats);
+            set(gca, 'xticklabels', delta_name_plot);
         end
 
     end
